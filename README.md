@@ -1,1 +1,1 @@
-# STREAMLIT UI for weight pilot AI application
+# STREAMLIT UI for weight managment pilot AI application
