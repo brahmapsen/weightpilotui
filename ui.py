@@ -3,7 +3,7 @@ import os
 from dotenv import load_dotenv
 import streamlit as st
 
-from services.agent_api import agent_url, ping_backend
+# from services.agent_api import agent_url, ping_backend
 from tabs import profile, action, monitor, coach
 
 load_dotenv()

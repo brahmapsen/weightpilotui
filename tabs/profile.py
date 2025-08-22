@@ -2,11 +2,39 @@
 import streamlit as st
 
 def render():
+
+    st.markdown("""
+        <style>
+        /* Color the selected chips (tags) inside ALL st.multiselect widgets */
+        .stMultiSelect [data-baseweb="tag"]{
+        background-color: #2F80ED !important; /* blue */
+        color: #ffffff !important;
+        border-radius: 999px !important;
+        border: none !important;
+        }
+        .stMultiSelect [data-baseweb="tag"] span{
+        color: #ffffff !important;
+        }
+        .stMultiSelect [data-baseweb="tag"] svg{
+        fill: #ffffff !important;
+        }
+        /* Optional: tweak the input border to match */
+        .stMultiSelect div[data-baseweb="select"] > div {
+        border-color: #2F80ED !important;
+        box-shadow: 0 0 0 1px #2F80ED !important;
+        }
+        </style>
+        """, unsafe_allow_html=True)
+
     with st.expander("Privacy & Consent", expanded=True):
-        st.markdown(
-            "- Race/ethnicity is optional and used only for culturally familiar menu ideas."
-        )
-        consent = st.checkbox("I understand and consent to proceed.", value=True)
+        c1, c2 = st.columns(2)
+        with c1:
+            consent = st.checkbox("I understand and consent to proceed.", value=True)
+        with c2:
+            st.markdown(
+                "- Race/ethnicity is optional and used only for culturally familiar menu ideas."
+            )
+
         st.session_state["consent"] = consent
 
     st.header("Basic Profile")
@@ -31,7 +59,7 @@ def render():
         )
 
     st.header("Goals & preferences")
-    g1, g2, g3 = st.columns(3)
+    g1, g2, g3, cuisines, allergies, medical_flags = st.columns(6)
     with g1:
         goal = st.selectbox("Goal", ["Maintain", "Lose", "Gain"], index=1).lower()
     with g2:
@@ -42,22 +70,24 @@ def render():
             ["none", "vegetarian", "vegan", "pescatarian", "mediterranean", "low-carb", "high-protein"],
             index=0,
         )
-
-    cuisines = st.multiselect(
-        "Cuisines you enjoy (for menu ideas)",
-        ["American", "Indian", "Mexican", "Chinese", "Japanese", "Middle Eastern", "Mediterranean", "Ethiopian", "Italian", "Other"],
-        default=["American", "Indian"],
-    )
-    allergies = st.multiselect(
-        "Allergies/intolerances",
-        ["none", "peanut", "tree nut", "gluten", "dairy", "egg", "shellfish", "soy", "sesame"],
-        default=["none"],
-    )
-    medical_flags = st.multiselect(
-        "Medical considerations (informational only — consult your clinician)",
-        ["none", "diabetes", "hypertension", "kidney disease", "pregnancy/breastfeeding"],
-        default=["none"],
-    )
+    with cuisines:
+        cuisines = st.multiselect(
+            "Cuisines you enjoy (for menu ideas)",
+            ["American", "Indian", "Mexican", "Chinese", "Japanese", "Middle Eastern", "Mediterranean", "Ethiopian", "Italian", "Other"],
+            default=["American", "Indian"],
+        )
+    with allergies:
+        allergies = st.multiselect(
+            "Allergies/intolerances",
+            ["none", "peanut", "tree nut", "gluten", "dairy", "egg", "shellfish", "soy", "sesame"],
+            default=["none"],
+        )
+    with medical_flags:
+        medical_flags = st.multiselect(
+            "Medical considerations (consult your clinician)",
+            ["none", "diabetes", "hypertension", "kidney disease", "pregnancy/breastfeeding"],
+            default=["none"],
+        )
 
     # Auto-save the profile in session so Action tab can use it
     profile = {
