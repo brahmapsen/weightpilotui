@@ -21,7 +21,7 @@ def render():
         /* Optional: tweak the input border to match */
         .stMultiSelect div[data-baseweb="select"] > div {
         border-color: #2F80ED !important;
-        box-shadow: 0 0 0 1px #2F80ED !important;
+        box-shadow: 0 0 0 4px #2F80ED !important;
         }
         </style>
         """, unsafe_allow_html=True)
@@ -84,7 +84,7 @@ def render():
         )
     with medical_flags:
         medical_flags = st.multiselect(
-            "Medical considerations (consult your clinician)",
+            "Medical considerations",
             ["none", "diabetes", "hypertension", "kidney disease", "pregnancy/breastfeeding"],
             default=["none"],
         )
