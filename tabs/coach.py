@@ -19,7 +19,7 @@ def _seed_pros() -> List[Dict[str, Any]]:
             "role": "Dietitian",
             "certifications": ["RD", "CNSC"],
             "specialties": ["Weight management", "Diabetes", "Clinical nutrition"],
-            "location": {"city": "Boston", "state": "MA", "country": "USA"},
+            "location": {"city": "Washington DC", "state": "DC", "country": "USA"},
             "modalities": ["Virtual", "In-person"],
             "email": "maya.chen@example.com",
             "phone": "+1 (617) 555-0134",
@@ -28,7 +28,7 @@ def _seed_pros() -> List[Dict[str, Any]]:
             "reviews": 178,
             "price_per_session": 120,
             "accepting_clients": True,
-            "languages": ["English", "Mandarin"],
+            "languages": ["English", "Spanish"],
         },
         {
             "id": "pt_101",
@@ -46,74 +46,6 @@ def _seed_pros() -> List[Dict[str, Any]]:
             "price_per_session": 85,
             "accepting_clients": True,
             "languages": ["English", "Spanish"],
-        },
-        {
-            "id": "rd_014",
-            "name": "Priya Nair, MS, RD",
-            "role": "Dietitian",
-            "certifications": ["RD"],
-            "specialties": ["Mediterranean diet", "Vegetarian/Vegan", "Gut health"],
-            "location": {"city": "San Jose", "state": "CA", "country": "USA"},
-            "modalities": ["Virtual"],
-            "email": "priya.nair@example.com",
-            "phone": "+1 (408) 555-0143",
-            "bio": "Specializes in plant-forward, culturally familiar menus with macro consistency for weight care.",
-            "rating": 4.8,
-            "reviews": 123,
-            "price_per_session": 110,
-            "accepting_clients": False,
-            "languages": ["English", "Hindi"],
-        },
-        {
-            "id": "pt_221",
-            "name": "Samir Haddad, NASM-CPT",
-            "role": "Personal Trainer",
-            "certifications": ["NASM-CPT"],
-            "specialties": ["HIIT", "Cardio conditioning", "Beginner programs"],
-            "location": {"city": "Seattle", "state": "WA", "country": "USA"},
-            "modalities": ["In-person"],
-            "email": "samir.haddad@example.com",
-            "phone": "+1 (206) 555-0112",
-            "bio": "Fun, accountability-first coaching. Progressive overload without burnout.",
-            "rating": 4.6,
-            "reviews": 64,
-            "price_per_session": 75,
-            "accepting_clients": True,
-            "languages": ["English", "Arabic"],
-        },
-        {
-            "id": "rd_045",
-            "name": "Elena Rossi, RD",
-            "role": "Dietitian",
-            "certifications": ["RD"],
-            "specialties": ["Weight management", "Hypertension", "Mediterranean diet"],
-            "location": {"city": "Miami", "state": "FL", "country": "USA"},
-            "modalities": ["Virtual", "In-person"],
-            "email": "elena.rossi@example.com",
-            "phone": "+1 (305) 555-0172",
-            "bio": "Habit-centric approach: small changes, big outcomes. Fluent in Spanish & Italian.",
-            "rating": 4.8,
-            "reviews": 82,
-            "price_per_session": 95,
-            "accepting_clients": True,
-            "languages": ["English", "Spanish", "Italian"],
-        },
-        {
-            "id": "pt_333",
-            "name": "Jordan Lee, CPT",
-            "role": "Personal Trainer",
-            "certifications": ["CPT"],
-            "specialties": ["Functional training", "Posture", "Weight loss"],
-            "location": {"city": "Chicago", "state": "IL", "country": "USA"},
-            "modalities": ["Virtual"],
-            "email": "jordan.lee@example.com",
-            "phone": "+1 (773) 555-0150",
-            "bio": "Remote-friendly coaching with flexible check-ins and weekly progress reviews.",
-            "rating": 4.5,
-            "reviews": 51,
-            "price_per_session": 65,
-            "accepting_clients": True,
-            "languages": ["English", "Korean"],
         },
     ]
 
@@ -253,48 +185,169 @@ def render():
     colc1, colc2 = st.columns([2, 3])
     with colc1:
         pro_name = st.selectbox("Choose expert", list(pro_options.keys()), index=default_idx if pro_options else 0)
-        contact_name = st.text_input("Your name", placeholder="Jane Doe")
-        contact_email = st.text_input("Your email", placeholder="you@example.com")
-        pref_date = st.date_input("Preferred date", value=date.today())
-        pref_time = st.time_input("Preferred time", value=time(10, 0))
-        modality_req = st.selectbox("Consultation mode", ["Virtual", "In-person"])
     with colc2:
-        msg = st.text_area(
-            "Message",
-            placeholder="Briefly describe your goals, preferences, or questions…",
-            height=160
-        )
-        attach_profile = st.checkbox("Attach my profile summary (helpful for diet planning)", value=True)
         send_btn = st.button("📨 Send request", use_container_width=True)
 
     if send_btn:
-        if not contact_name.strip() or not contact_email.strip():
-            st.error("Please provide your name and email.")
-        else:
-            pro_id = pro_options[pro_name]
-            request_payload = {
-                "pro_id": pro_id,
-                "pro_name": pro_name,
-                "contact_name": contact_name.strip(),
-                "contact_email": contact_email.strip(),
-                "preferred_datetime": f"{pref_date} {pref_time}",
-                "message": msg.strip(),
-                "modality": modality_req,
-                "attach_profile": attach_profile,
-            }
-            # Store locally (for demo). Replace with POST to your backend when ready.
-            st.session_state["coach_requests"].append(request_payload)
+        from services.agent_api import AGENT_API_URL
+        # try:
+        #     vapi_page = f"{AGENT_API_URL}/vapi/widget"
+        #     st.info("Open the voice assistant in a new tab to start your call.")
+        #     st.link_button("🎙️ Open Voice Call", vapi_page)
+        # except Exception as e:
+        #     st.error(f"Vapi not configured: {e}")
+        #     return
+        from services.agent_api import vapi_config
 
-            # Optional future backend:
-            # try:
-            #     base = os.getenv("AGENT_API_URL", "http://localhost:8000").rstrip("/")
-            #     r = requests.post(f"{base}/v1/coach/request", json=request_payload, timeout=15)
-            #     r.raise_for_status()
-            # except Exception as e:
-            #     st.warning(f"Saved locally (backend not configured): {e}")
+        # Use env directly; no backend dependency
+        cfg = vapi_config()            # <-- call it
+        vapi_pk  = cfg["public_key"]   # not vapi_config.public_key
+        vapi_aid = cfg["assistant_id"]
+        if not (vapi_pk and vapi_aid):
+            st.error("VAPI_PUBLIC_KEY or VAPI_ASSISTANT_ID not set in environment.")
+            return
 
-            st.success(f"Request sent to **{pro_name}**. You'll be contacted by email.")
-            st.json(request_payload)
+        # Use Vapi's browser widget bundle (works without bundlers)
+        # Docs: https://vapi.ai/docs/examples/voice-widget-example
+        # sdk_src = "https://cdn.jsdelivr.net/gh/VapiAI/html-script-tag@latest/dist/assets/index.js"
+
+        # Full-page fallback target (no sandbox; avoids worklet/worker issues in Streamlit iframe)
+        fallback_url = f"{AGENT_API_URL}/vapi/widget?assistantId={vapi_aid}&publicKey={vapi_pk}"
+
+        html = f"""
+        <div style="font-family:system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;">
+          <h3>Vapi Voice Assistant</h3>
+          <div style="font-size:12px;color:#6B7280;margin:-6px 0 10px;">
+            Assistant: <code>{vapi_aid[:8]}…</code> · Key: <code>{vapi_pk[:4]}…</code>
+          </div>
+
+          <div style="display:flex;gap:8px;margin-bottom:8px;">
+            <button id="vapi-start" style="padding:6px 12px;">Start Call</button>
+            <button id="vapi-stop"  style="padding:6px 12px;" disabled>End Call</button>
+            <button id="vapi-open"  style="padding:6px 12px;">Open full-page</button>
+          </div>
+
+          <div style="background:#0B1220;border-radius:8px;padding:10px;">
+            <pre id="vapi-log" style="margin:0;color:#E5E7EB;white-space:pre-wrap;max-height:240px;overflow:auto;">
+Status / Logs:</pre>
+          </div>
+        </div>
+
+        <!-- Improve load reliability -->
+        <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+        <link rel="preconnect" href="https://c.daily.co" crossorigin>
+        <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+        <link rel="dns-prefetch" href="https://c.daily.co">
+
+        <script>
+          const sdkUrl = "https://cdn.jsdelivr.net/gh/VapiAI/html-script-tag@latest/dist/assets/index.js";
+          const assistantId = "{vapi_aid}";
+          const publicKey   = "{vapi_pk}";
+          const fallbackUrl = "{fallback_url}";
+
+          const logEl   = document.getElementById('vapi-log');
+          const startBt = document.getElementById('vapi-start');
+          const stopBt  = document.getElementById('vapi-stop');
+          const openBt  = document.getElementById('vapi-open');
+
+          function log(s) {{
+            logEl.textContent += "\\n" + s;
+            logEl.scrollTop = logEl.scrollHeight;
+          }}
+
+          function loadScript(url) {{
+            return new Promise((resolve, reject) => {{
+              const s = document.createElement('script');
+              s.src = url; s.async = true; s.defer = true;
+              s.onload = resolve;
+              s.onerror = (e)=>reject(new Error('Failed loading Vapi SDK: ' + e.type));
+              document.head.appendChild(s);
+            }});
+          }}
+
+          let vapi = null;
+
+          async function getVapi() {{
+            if (vapi) return vapi;
+            await loadScript(sdkUrl).catch(e => {{ log(e.message); throw e; }});
+            if (!window.vapiSDK || !window.vapiSDK.run) {{
+              log("Vapi SDK not available on window (CSP/adblock?).");
+              throw new Error("Vapi SDK missing");
+            }}
+            log("Loaded SDK: " + sdkUrl);
+
+            vapi = window.vapiSDK.run({{
+              apiKey: publicKey,
+              assistant: assistantId,
+              config: {{
+                open: false,
+                position: "bottom-right",
+                theme: "light",
+                showSettings: false
+              }}
+            }});
+
+            vapi.on?.("error", (e) => log("error: " + (e?.message || e)));
+            vapi.on?.("call-start", () => {{
+              log("call-start");
+              startBt.disabled = true; stopBt.disabled = false;
+            }});
+            vapi.on?.("call-end", () => {{
+              log("call-end");
+              startBt.disabled = false; stopBt.disabled = true;
+            }});
+
+            return vapi;
+          }}
+
+          function looksLikeDailyWorkerError(msg) {{
+            // Heuristic: the Daily call-machine worker/worklet failed inside a sandbox/Firefox
+            return /call-machine|daily\\.co|worklet|worker|bundle/i.test(String(msg||""));
+          }}
+
+          startBt.addEventListener('click', async () => {{
+            try {{
+              const inst = await getVapi();
+              if (typeof inst.start === 'function') {{
+                await inst.start(assistantId);
+              }} else {{
+                inst.open?.();
+                log("Widget opened; press the mic to start.");
+              }}
+            }} catch (e) {{
+              const m = e?.message || e;
+              log("start error: " + m);
+              if (looksLikeDailyWorkerError(m)) {{
+                log("Opening full-page call to avoid iframe sandbox limitations…");
+                window.open(fallbackUrl, "_blank", "noopener,noreferrer");
+              }}
+            }}
+          }});
+
+          stopBt.addEventListener('click', async () => {{
+            try {{
+              if (vapi && typeof vapi.stop === 'function') await vapi.stop();
+              else vapi?.close?.();
+            }} catch (e) {{
+              log("stop error: " + (e?.message || e));
+            }}
+          }});
+
+          openBt.addEventListener('click', () => {{
+            window.open(fallbackUrl, "_blank", "noopener,noreferrer");
+          }});
+
+          // Helpful diagnostics
+          log("Secure context: " + (window.isSecureContext ? "yes" : "no"));
+          log("Browser: " + navigator.userAgent);
+        </script>
+        """
+
+        st.components.v1.html(html, height=360, scrolling=True)
+        st.success(f"Request prepared for **{pro_name}**. Use the Start/End buttons above.")
+
+        # st.success(f"Request sent to **{pro_name}**. You'll be contacted by email.")
+        # st.json(request_payload)
 
     # Simple history viewer (local demo only)
     if st.session_state["coach_requests"]:

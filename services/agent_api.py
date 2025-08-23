@@ -70,3 +70,8 @@ def generate_exercise_plan(payload: dict) -> dict:
     r = _session().post(f"{AGENT_API_URL}/v1/exercise/plan", data=json.dumps(payload), timeout=TIMEOUT)
     r.raise_for_status()
     return r.json()  # {"plan_markdown": "..."}
+
+def vapi_config():
+    r = _session().get(f"{AGENT_API_URL}/v1/vapi/config", timeout=10)
+    r.raise_for_status()
+    return r.json()
