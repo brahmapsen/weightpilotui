@@ -21,7 +21,7 @@ with top_left:
         st.image(LOGO_PATH, caption=None, use_column_width=True)
 
 with top_mid:
-    st.title("🧭 Personalized Weight Management")
+    st.title("🧭 EverLean Weight Management")
 
 # with st.sidebar:
 #     st.subheader("Agent")
